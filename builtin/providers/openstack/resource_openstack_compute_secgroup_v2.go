@@ -2,6 +2,7 @@ package openstack
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -117,7 +118,7 @@ func resourceComputeSecGroupV2Create(d *schema.ResourceData, meta interface{}) e
 		return fmt.Errorf("Error creating OpenStack security group: %s", err)
 	}
 
-	d.SetId(sg.ID)
+	d.SetId(string(sg.ID))
 
 	// Now that the security group has been created, iterate through each rule and create it
 	createRuleOptsList := resourceSecGroupRulesV2(d)
@@ -197,7 +198,7 @@ func resourceComputeSecGroupV2Update(d *schema.ResourceData, meta interface{}) e
 
 		for _, r := range secgrouprulesToRemove.List() {
 			rule := resourceSecGroupRuleV2(d, r)
-			err := secgroups.DeleteRule(computeClient, rule.ID).ExtractErr()
+			err := secgroups.DeleteRule(computeClient, string(rule.ID)).ExtractErr()
 			if err != nil {
 				if _, ok := err.(gophercloud.ErrDefault404); ok {
 					continue
@@ -302,8 +303,8 @@ func checkSecGroupV2RulesForErrors(d *schema.ResourceData) error {
 func resourceSecGroupRuleV2(d *schema.ResourceData, rawRule interface{}) secgroups.Rule {
 	rawRuleMap := rawRule.(map[string]interface{})
 	return secgroups.Rule{
-		ID:            rawRuleMap["id"].(string),
-		ParentGroupID: d.Id(),
+		ID:            rawRuleMap["id"].(json.Number),
+		ParentGroupID: json.Number(d.Id()),
 		FromPort:      rawRuleMap["from_port"].(int),
 		ToPort:        rawRuleMap["to_port"].(int),
 		IPProtocol:    rawRuleMap["ip_protocol"].(string),
@@ -335,7 +336,7 @@ func rulesToMap(computeClient *gophercloud.ServiceClient, d *schema.ResourceData
 
 				for _, sg := range securityGroups {
 					if sg.Name == sgr.Group.Name {
-						groupId = sg.ID
+						groupId = string(sg.ID)
 					}
 				}
 			}

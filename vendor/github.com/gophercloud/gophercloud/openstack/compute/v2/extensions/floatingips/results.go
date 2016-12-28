@@ -1,6 +1,8 @@
 package floatingips
 
 import (
+	"encoding/json"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -8,7 +10,7 @@ import (
 // A FloatingIP is an IP that can be associated with an instance
 type FloatingIP struct {
 	// ID is a unique ID of the Floating IP
-	ID string `json:"id"`
+	ID json.Number `json:"id,Number"`
 
 	// FixedIP is the IP of the instance related to the Floating IP
 	FixedIP string `json:"fixed_ip,omitempty"`

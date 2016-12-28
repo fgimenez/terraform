@@ -1,6 +1,8 @@
 package secgroups
 
 import (
+	"encoding/json"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -10,7 +12,7 @@ type SecurityGroup struct {
 	// The unique ID of the group. If Neutron is installed, this ID will be
 	// represented as a string UUID; if Neutron is not installed, it will be a
 	// numeric ID. For the sake of consistency, we always cast it to a string.
-	ID string
+	ID json.Number `json:",Number"`
 
 	// The human-readable name of the group, which needs to be unique.
 	Name string
@@ -31,7 +33,7 @@ type Rule struct {
 	// The unique ID. If Neutron is installed, this ID will be
 	// represented as a string UUID; if Neutron is not installed, it will be a
 	// numeric ID. For the sake of consistency, we always cast it to a string.
-	ID string
+	ID json.Number `json:",Number"`
 
 	// The lower bound of the port range which this security group should open up
 	FromPort int `json:"from_port"`
@@ -46,7 +48,7 @@ type Rule struct {
 	IPRange IPRange `json:"ip_range"`
 
 	// The security group ID to which this rule belongs
-	ParentGroupID string `json:"parent_group_id"`
+	ParentGroupID json.Number `json:"parent_group_id,Number"`
 
 	// Not documented.
 	Group Group

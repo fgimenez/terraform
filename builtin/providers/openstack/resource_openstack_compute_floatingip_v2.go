@@ -67,7 +67,7 @@ func resourceComputeFloatingIPV2Create(d *schema.ResourceData, meta interface{})
 		return fmt.Errorf("Error creating Floating IP: %s", err)
 	}
 
-	d.SetId(newFip.ID)
+	d.SetId(string(newFip.ID))
 
 	return resourceComputeFloatingIPV2Read(d, meta)
 }
